@@ -13,7 +13,7 @@ interface HotelCardProps {
 export function HotelCard({ hotel }: HotelCardProps) {
   return (
     <Link href={`/hotels/${hotel.id}`} prefetch={false}>
-      <Card className="overflow-hidden border-0 shadow-none bg-transparent cursor-pointer transition-all duration-300 hover:shadow-[0px_8px_24px_rgba(63,44,119,0.15)] group">
+      <Card className="overflow-hidden border border-gray-100 hover:shadow-[0px_8px_24px_rgba(63,44,119,0.1)] transition-all duration-300">
         <CardContent className="p-0 flex flex-col h-full">
           <div className="relative w-full h-[250px] md:h-[280px] lg:h-[308px] rounded-[5px] overflow-hidden">
             <Image
@@ -36,13 +36,13 @@ export function HotelCard({ hotel }: HotelCardProps) {
             </button>
           </div>
           <div className="mt-4 flex-1 flex flex-col">
-            <p className="[font-family:'Inter',Helvetica] font-medium text-[#5f5f5f] text-sm md:text-base mb-2">
+            <p className="[font-family:'Inter',Helvetica] font-medium text-[#5f5f5f] text-sm md:text-base mb-2 pl-3">
               {hotel.type}
             </p>
-            <h3 className="[font-family:'Inter',Helvetica] font-bold text-[#3f2c77] text-sm md:text-base mb-2 min-h-[40px] md:min-h-[48px] transition-colors duration-200 group-hover:text-[#2a2158]">
+            <h3 className="[font-family:'Inter',Helvetica] font-bold text-[#3f2c77] text-sm md:text-base mb-1 pl-3 min-h-[40px] md:min-h-[48px] transition-colors duration-200 group-hover:text-[#2a2158]">
               {hotel.name}
             </h3>
-            <p className="[font-family:'Inter',Helvetica] font-medium text-black text-sm md:text-base mb-4">
+            <p className="[font-family:'Inter',Helvetica] font-medium text-black text-sm md:text-base mb-4 pl-3">
               {hotel.location}
             </p>
 

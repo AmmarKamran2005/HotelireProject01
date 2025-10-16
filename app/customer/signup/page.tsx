@@ -17,6 +17,7 @@ type AddressType = "canadian" | "international";
 type SignupErrors = Partial<{
   firstName: string;
   lastName: string;
+  email: string;
   password: string;
   confirmPassword: string;
   address: string;
@@ -156,6 +157,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    email: "",
     password: "",
     confirmPassword: "",
     // address fields
@@ -211,6 +213,14 @@ export default function SignupPage() {
         else if (!nameRegex.test(v)) msg = "Letters and Spaces Only";
         break;
       }
+      case "email":
+        if (!value) msg = "Email is required.";
+        else if (
+          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(String(value))
+        )
+          msg = "Invalid email address.";
+        break;
+
       case "password":
         if (!value) msg = "Password is Required.";
         else if (!passwordRegex.test(String(value)))
@@ -268,6 +278,7 @@ export default function SignupPage() {
     const required: (keyof typeof formData)[] = [
       "firstName",
       "lastName",
+      "email",
       "password",
       "confirmPassword",
       "phoneNumber",
@@ -318,14 +329,17 @@ export default function SignupPage() {
     <div className="min-h-dvh flex flex-col md:flex-row">
       {/* Left 40% image section */}
       <aside className="relative hidden md:block md:basis-2/5">
-        <Image 
-          src="/figmaAssets/Rectangle-334.png" 
-          alt="Hotel room" 
-          fill 
-          className="object-cover" 
-          priority 
+        <Image
+          src="/figmaAssets/Rectangle-334.png"
+          alt="Hotel room"
+          fill
+          className="object-cover"
+          priority
         />
-        <div className="absolute inset-0" style={{ backgroundColor: "#3F2C77", opacity: 0.65 }} />
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: "#3F2C77", opacity: 0.65 }}
+        />
         <div className="absolute inset-0 flex items-center">
           <div className="px-8 lg:px-12">
             <h2 className="[font-family:'Poppins',Helvetica] text-white text-3xl lg:text-5xl font-bold max-w-[20ch]">
@@ -338,553 +352,624 @@ export default function SignupPage() {
       {/* Right 60% form section */}
       <main className="flex-1 md:basis-3/5 flex items-center justify-center py-10 px-6 lg:px-12 bg-white">
         <div className="w-full max-w-[720px] space-y-8">
-      {/* Logo + Title */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-center gap-3">
-          <img
-            className="w-[141px] h-[94px]"
-            alt="Group"
-            src="/figmaAssets/group-370.png"
-          />
-        </div>
-        <h1
-          className="text-2xl lg:text-3xl font-bold flex items-center justify-center"
-          style={{ color: BRAND }}
-        >
-          {userType === "customer"
-            ? "Register as Customer"
-            : "Register as Property Owner"}
-        </h1>
+          {/* Logo + Title */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-center gap-3">
+              <img
+                className="w-[141px] h-[94px]"
+                alt="Group"
+                src="/figmaAssets/group-370.png"
+              />
+            </div>
+            <h1
+              className="text-2xl lg:text-3xl font-bold flex items-center justify-center"
+              style={{ color: BRAND }}
+            >
+              {userType === "customer"
+                ? "Register as Customer"
+                : "Register as Property Owner"}
+            </h1>
 
-        <div className="mt-2 flex gap-2 justify-center">
-          <Button
-            type="button"
-            aria-pressed={userType === "customer"}
-            onClick={() => setUserType("customer")}
-            className={`h-10 px-4 ${userType === "customer" ? "shadow-sm" : ""}`}
-            style={{
-              backgroundColor: userType === "customer" ? BRAND : "white",
-              color: userType === "customer" ? "white" : BRAND,
-              border: `1px solid ${BRAND}`,
+            <div className="mt-2 flex gap-2 justify-center">
+              <Button
+                type="button"
+                aria-pressed={userType === "customer"}
+                onClick={() => setUserType("customer")}
+                className={`h-10 px-4 ${userType === "customer" ? "shadow-sm" : ""}`}
+                style={{
+                  backgroundColor: userType === "customer" ? BRAND : "white",
+                  color: userType === "customer" ? "white" : BRAND,
+                  border: `1px solid ${BRAND}`,
+                }}
+              >
+                As Customer
+              </Button>
+              <Button
+                type="button"
+                aria-pressed={userType === "owner"}
+                onClick={() => {
+                  setUserType("owner");
+                  setAddressType("canadian");
+                  setFormData((p) => ({
+                    ...p,
+                    country: { value: "CA", label: "Canada" },
+                    state: "",
+                    province: "",
+                    city: "",
+                    postalCode: "",
+                  }));
+                }}
+                className={`h-10 px-4 ${userType === "owner" ? "shadow-sm" : ""}`}
+                style={{
+                  backgroundColor: userType === "owner" ? BRAND : "white",
+                  color: userType === "owner" ? "white" : BRAND,
+                  border: `1px solid ${BRAND}`,
+                }}
+              >
+                As Property Owner
+              </Button>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form
+            noValidate
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!validateAll()) return;
+              setIsSubmitting(true);
+              setTimeout(() => {
+                setIsSubmitting(false);
+                router.push("/customer/signup/thank-you");
+              }, 900);
             }}
           >
-            As Customer
-          </Button>
-          <Button
-            type="button"
-            aria-pressed={userType === "owner"}
-            onClick={() => {
-              setUserType("owner");
-              setAddressType("canadian");
-              setFormData((p) => ({
-                ...p,
-                country: { value: "CA", label: "Canada" },
-                state: "",
-                province: "",
-                city: "",
-                postalCode: "",
-              }));
-            }}
-            className={`h-10 px-4 ${userType === "owner" ? "shadow-sm" : ""}`}
-            style={{
-              backgroundColor: userType === "owner" ? BRAND : "white",
-              color: userType === "owner" ? "white" : BRAND,
-              border: `1px solid ${BRAND}`,
-            }}
-          >
-            As Property Owner
-          </Button>
-        </div>
-      </div>
-
-      {/* Form */}
-      <form
-        noValidate
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!validateAll()) return;
-          setIsSubmitting(true);
-          setTimeout(() => {
-            setIsSubmitting(false);
-            router.push("/customer/signup/thank-you");
-          }, 900);
-        }}
-      >
-        {/* Full Name */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-700">Full Name</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Input
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={(e) => setField("firstName", e.target.value)}
-                onBlur={(e) => validateField("firstName", e.target.value)}
-                className={inputClass(errors.firstName)}
-                aria-invalid={!!errors.firstName || undefined}
-              />
-              {errors.firstName && (
-                <p className="text-xs text-red-500 mt-1">{errors.firstName}</p>
-              )}
-            </div>
-            <div>
-              <Input
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={(e) => setField("lastName", e.target.value)}
-                onBlur={(e) => validateField("lastName", e.target.value)}
-                className={inputClass(errors.lastName)}
-                aria-invalid={!!errors.lastName || undefined}
-              />
-              {errors.lastName && (
-                <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Password */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
-              Password
-            </Label>
-            <Input
-              type="password"
-              value={formData.password}
-              onChange={(e) => setField("password", e.target.value)}
-              onBlur={(e) => validateField("password", e.target.value)}
-              className={inputClass(errors.password)}
-              aria-invalid={!!errors.password || undefined}
-            />
-            {errors.password && (
-              <p className="text-xs text-red-500">{errors.password}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
-              Confirm Password
-            </Label>
-            <Input
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => setField("confirmPassword", e.target.value)}
-              onBlur={(e) => validateField("confirmPassword", e.target.value)}
-              className={inputClass(errors.confirmPassword)}
-              aria-invalid={!!errors.confirmPassword || undefined}
-            />
-            {errors.confirmPassword && (
-              <p className="text-xs text-red-500">{errors.confirmPassword}</p>
-            )}
-          </div>
-        </div>
-
-        {userType === "customer" && (
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <input
-                  id="addr-ca"
-                  type="radio"
-                  name="addr-type"
-                  checked={addressType === "canadian"}
-                  onChange={() => {
-                    setAddressType("canadian");
-                    setFormData((p) => ({
-                      ...p,
-                      country: { value: "CA", label: "Canada" },
-                      state: "",
-                    }));
-                  }}
-                  className="h-4 w-4 accent-[#3F2C77]"
-                />
-                <Label htmlFor="addr-ca" className="text-sm">
-                  I prefer a Canadian address
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  id="addr-intl"
-                  type="radio"
-                  name="addr-type"
-                  checked={addressType === "international"}
-                  onChange={() => {
-                    setAddressType("international");
-                    setFormData((p) => ({
-                      ...p,
-                      country: null,
-                      province: "",
-                      state: "",
-                      city: "",
-                      postalCode: "",
-                    }));
-                  }}
-                  className="h-4 w-4 accent-[#3F2C77]"
-                />
-                <Label htmlFor="addr-intl" className="text-sm">
-                  I prefer an International address
-                </Label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Address groups */}
-        {userType === "owner" ||
-        (userType === "customer" && addressType === "canadian") ? (
-          <>
-            {/* Canadian address */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Province
-                </Label>
-                <Select
-                  instanceId="ca-province"
-                  options={CA_PROVINCES.map((p) => ({ value: p, label: p }))}
-                  value={toOption(formData.province)}
-                  onChange={(opt: any) =>
-                    setField("province", opt?.value || "")
-                  }
-                  styles={selectStyles}
-                  placeholder="Select province"
-                />
-                {errors.province && (
-                  <p className="text-xs text-red-500 mt-1">{errors.province}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  City
-                </Label>
-                <Select
-                  instanceId="ca-city"
-                  isDisabled={!formData.province}
-                  options={(PROVINCE_CITIES[formData.province] || []).map(
-                    (c) => ({ value: c, label: c }),
-                  )}
-                  value={toOption(formData.city)}
-                  onChange={(opt: any) => setField("city", opt?.value || "")}
-                  styles={selectStyles}
-                  placeholder={
-                    formData.province ? "Select city" : "Select province first"
-                  }
-                />
-                {errors.city && (
-                  <p className="text-xs text-red-500 mt-1">{errors.city}</p>
-                )}
-              </div>
-            </div>
-
+            {/* Full Name */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
-                Address
+                Full Name
               </Label>
-              <Input
-                placeholder="Street Address"
-                value={formData.address}
-                onChange={(e) => setField("address", e.target.value)}
-                onBlur={(e) => validateField("address", e.target.value)}
-                className={inputClass(errors.address)}
-                aria-invalid={!!errors.address || undefined}
-              />
-              {errors.address && (
-                <p className="text-xs text-red-500 mt-1">{errors.address}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Postal Code
-                </Label>
-                <Input
-                  maxLength={7}
-                  placeholder="A1A 1A1"
-                  value={formData.postalCode}
-                  onChange={(e) => setField("postalCode", e.target.value)}
-                  onBlur={(e) => validateField("postalCode", e.target.value)}
-                  className={inputClass(errors.postalCode)}
-                  aria-invalid={!!errors.postalCode || undefined}
-                />
-                {errors.postalCode && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.postalCode}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Phone Number (Canada)
-                </Label>
-                <div className="flex">
-                  <span className="inline-flex items-center rounded-l-md border border-r-0 bg-gray-50 px-3 text-sm text-gray-700 select-none">
-                    +1
-                  </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
                   <Input
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={MAX_PHONE_LEN}
-                    placeholder="10 digits"
-                    value={formData.phoneNumber}
-                    onChange={(e) => setField("phoneNumber", e.target.value)}
-                    onBlur={(e) => validateField("phoneNumber", e.target.value)}
-                    className={`${inputClass(errors.phoneNumber)} rounded-l-none border-l-0`}
-                    aria-invalid={!!errors.phoneNumber || undefined}
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={(e) => setField("firstName", e.target.value)}
+                    onBlur={(e) => validateField("firstName", e.target.value)}
+                    className={inputClass(errors.firstName)}
+                    aria-invalid={!!errors.firstName || undefined}
                   />
-                </div>
-                {errors.phoneNumber && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.phoneNumber}
-                  </p>
-                )}
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* International address */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Country
-                </Label>
-                <Select
-                  instanceId="country"
-                  options={countryOptions}
-                  value={formData.country}
-                  onChange={(opt: any) => {
-                    setField("country", opt);
-                    // reset state fields when country changes
-                    setFormData((p) => ({
-                      ...p,
-                      province: "",
-                      state: "",
-                      city: "",
-                      postalCode: "",
-                    }));
-                  }}
-                  styles={selectStyles}
-                  placeholder="Select country"
-                />
-                {errors.country && (
-                  <p className="text-xs text-red-500 mt-1">{errors.country}</p>
-                )}
-              </div>
-
-              {formData.country?.value === "CA" ? (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Province
-                  </Label>
-                  <Select
-                    instanceId="intl-ca-province"
-                    options={CA_PROVINCES.map((p) => ({ value: p, label: p }))}
-                    value={toOption(formData.province)}
-                    onChange={(opt: any) =>
-                      setField("province", opt?.value || "")
-                    }
-                    styles={selectStyles}
-                    placeholder="Select province"
-                  />
-                  {errors.province && (
+                  {errors.firstName && (
                     <p className="text-xs text-red-500 mt-1">
-                      {errors.province}
+                      {errors.firstName}
                     </p>
                   )}
                 </div>
-              ) : formData.country?.value === "US" ? (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">
-                    State
-                  </Label>
-                  <Select
-                    instanceId="intl-us-state"
-                    options={US_STATES.map((s) => ({ value: s, label: s }))}
-                    value={toOption(formData.state)}
-                    onChange={(opt: any) => setField("state", opt?.value || "")}
-                    styles={selectStyles}
-                    placeholder="Select state"
-                  />
-                  {errors.state && (
-                    <p className="text-xs text-red-500 mt-1">{errors.state}</p>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Province/State
-                  </Label>
+                <div>
                   <Input
-                    placeholder="Province/State"
-                    value={formData.state}
-                    onChange={(e) => setField("state", e.target.value)}
-                    onBlur={(e) => validateField("state", e.target.value)}
-                    className={inputClass(errors.state)}
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={(e) => setField("lastName", e.target.value)}
+                    onBlur={(e) => validateField("lastName", e.target.value)}
+                    className={inputClass(errors.lastName)}
+                    aria-invalid={!!errors.lastName || undefined}
                   />
-                  {errors.state && (
-                    <p className="text-xs text-red-500 mt-1">{errors.state}</p>
+                  {errors.lastName && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.lastName}
+                    </p>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Email</Label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) => setField("email", e.target.value)}
+                onBlur={(e) => validateField("email", e.target.value)}
+                className={inputClass(errors.email)}
+                aria-invalid={!!errors.email || undefined}
+              />
+              {errors.email && (
+                <p className="text-xs text-red-500 mt-1">{errors.email}</p>
               )}
             </div>
 
+            {/* Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
-                  City
-                </Label>
-                {formData.country?.value === "CA" ? (
-                  <Select
-                    instanceId="intl-ca-city"
-                    isDisabled={!formData.province}
-                    options={(PROVINCE_CITIES[formData.province] || []).map(
-                      (c) => ({ value: c, label: c }),
-                    )}
-                    value={toOption(formData.city)}
-                    onChange={(opt: any) => setField("city", opt?.value || "")}
-                    styles={selectStyles}
-                    placeholder={
-                      formData.province
-                        ? "Select city"
-                        : "Select province first"
-                    }
-                  />
-                ) : (
-                  <Input
-                    placeholder="City"
-                    value={formData.city}
-                    onChange={(e) => setField("city", e.target.value)}
-                    onBlur={(e) => validateField("city", e.target.value)}
-                    className={inputClass(errors.city)}
-                  />
-                )}
-                {errors.city && (
-                  <p className="text-xs text-red-500 mt-1">{errors.city}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Address
+                  Password
                 </Label>
                 <Input
-                  placeholder="Street address"
-                  value={formData.address}
-                  onChange={(e) => setField("address", e.target.value)}
-                  onBlur={(e) => validateField("address", e.target.value)}
-                  className={inputClass(errors.address)}
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setField("password", e.target.value)}
+                  onBlur={(e) => validateField("password", e.target.value)}
+                  className={inputClass(errors.password)}
+                  aria-invalid={!!errors.password || undefined}
                 />
-                {errors.address && (
-                  <p className="text-xs text-red-500 mt-1">{errors.address}</p>
+                {errors.password && (
+                  <p className="text-xs text-red-500">{errors.password}</p>
                 )}
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Postal/ZIP remains; Phone with +1 prefix kept for Canada */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
-                  Postal / ZIP
+                  Confirm Password
                 </Label>
                 <Input
-                  maxLength={10}
-                  placeholder={
-                    formData.country?.value === "CA"
-                      ? "A1A 1A1"
-                      : "ZIP / Postal"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setField("confirmPassword", e.target.value)}
+                  onBlur={(e) =>
+                    validateField("confirmPassword", e.target.value)
                   }
-                  value={formData.postalCode}
-                  onChange={(e) => setField("postalCode", e.target.value)}
-                  onBlur={(e) => {
-                    if (formData.country?.value === "CA")
-                      validateField("postalCode", e.target.value);
-                    else
-                      setErrors((prev) => ({
-                        ...prev,
-                        postalCode: e.target.value.trim()
-                          ? ""
-                          : "Postal/ZIP is required.",
-                      }));
-                  }}
-                  className={inputClass(errors.postalCode)}
+                  className={inputClass(errors.confirmPassword)}
+                  aria-invalid={!!errors.confirmPassword || undefined}
                 />
-                {errors.postalCode && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.postalCode}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Phone Number (Canada)
-                </Label>
-                <div className="flex">
-                  <span className="inline-flex items-center rounded-l-md border border-r-0 bg-gray-50 px-3 text-sm text-gray-700 select-none">
-                    +1
-                  </span>
-                  <Input
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={MAX_PHONE_LEN}
-                    placeholder="10 digits"
-                    value={formData.phoneNumber}
-                    onChange={(e) => setField("phoneNumber", e.target.value)}
-                    onBlur={(e) => validateField("phoneNumber", e.target.value)}
-                    className={`${inputClass(errors.phoneNumber)} rounded-l-none border-l-0`}
-                  />
-                </div>
-                {errors.phoneNumber && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.phoneNumber}
+                {errors.confirmPassword && (
+                  <p className="text-xs text-red-500">
+                    {errors.confirmPassword}
                   </p>
                 )}
               </div>
             </div>
-          </>
-        )}
 
-        {/* Terms */}
-        <div className="flex items-start gap-2 pt-2">
-          <Checkbox
-            id="terms"
-            checked={formData.agreeToTerms}
-            onCheckedChange={(v) => setField("agreeToTerms", Boolean(v))}
-            className="mt-1"
-          />
-          <Label
-            htmlFor="terms"
-            className="text-sm text-gray-600 leading-relaxed"
-          >
-            I agree to the{" "}
-            <a href="#" className="hover:underline" style={{ color: BRAND }}>
-              Terms and Condition
-            </a>{" "}
-            and{" "}
-            <a href="#" className="hover:underline" style={{ color: BRAND }}>
-              Privacy Policy
-            </a>
-          </Label>
-        </div>
-        {errors.agreeToTerms && (
-          <p className="text-xs text-red-500">{errors.agreeToTerms}</p>
-        )}
+            {userType === "customer" && (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="addr-ca"
+                      type="radio"
+                      name="addr-type"
+                      checked={addressType === "canadian"}
+                      onChange={() => {
+                        setAddressType("canadian");
+                        setFormData((p) => ({
+                          ...p,
+                          country: { value: "CA", label: "Canada" },
+                          state: "",
+                        }));
+                      }}
+                      className="h-4 w-4 accent-[#3F2C77]"
+                    />
+                    <Label htmlFor="addr-ca" className="text-sm">
+                      I prefer a Canadian address
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="addr-intl"
+                      type="radio"
+                      name="addr-type"
+                      checked={addressType === "international"}
+                      onChange={() => {
+                        setAddressType("international");
+                        setFormData((p) => ({
+                          ...p,
+                          country: null,
+                          province: "",
+                          state: "",
+                          city: "",
+                          postalCode: "",
+                        }));
+                      }}
+                      className="h-4 w-4 accent-[#3F2C77]"
+                    />
+                    <Label htmlFor="addr-intl" className="text-sm">
+                      I prefer an International address
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            )}
 
-        {/* Submit */}
-        <Button
-          type="submit"
-          className="w-full h-12 text-white transition-colors"
-          style={{ backgroundColor: BRAND }}
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-      </form>
+            {/* Address groups */}
+            {userType === "owner" ||
+            (userType === "customer" && addressType === "canadian") ? (
+              <>
+                {/* Canadian address */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Province
+                    </Label>
+                    <Select
+                      instanceId="ca-province"
+                      options={CA_PROVINCES.map((p) => ({
+                        value: p,
+                        label: p,
+                      }))}
+                      value={toOption(formData.province)}
+                      onChange={(opt: any) =>
+                        setField("province", opt?.value || "")
+                      }
+                      styles={selectStyles}
+                      placeholder="Select province"
+                    />
+                    {errors.province && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.province}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      City
+                    </Label>
+                    <Select
+                      instanceId="ca-city"
+                      isDisabled={!formData.province}
+                      options={(PROVINCE_CITIES[formData.province] || []).map(
+                        (c) => ({ value: c, label: c }),
+                      )}
+                      value={toOption(formData.city)}
+                      onChange={(opt: any) =>
+                        setField("city", opt?.value || "")
+                      }
+                      styles={selectStyles}
+                      placeholder={
+                        formData.province
+                          ? "Select city"
+                          : "Select province first"
+                      }
+                    />
+                    {errors.city && (
+                      <p className="text-xs text-red-500 mt-1">{errors.city}</p>
+                    )}
+                  </div>
+                </div>
 
-      <div className="text-center text-xs text-gray-500 pt-4">
-        Copyright 2025, All rights reserved. – Hotelire.ca
-      </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Address
+                  </Label>
+                  <Input
+                    placeholder="Street Address"
+                    value={formData.address}
+                    onChange={(e) => setField("address", e.target.value)}
+                    onBlur={(e) => validateField("address", e.target.value)}
+                    className={inputClass(errors.address)}
+                    aria-invalid={!!errors.address || undefined}
+                  />
+                  {errors.address && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.address}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Postal Code
+                    </Label>
+                    <Input
+                      maxLength={7}
+                      placeholder="A1A 1A1"
+                      value={formData.postalCode}
+                      onChange={(e) => setField("postalCode", e.target.value)}
+                      onBlur={(e) =>
+                        validateField("postalCode", e.target.value)
+                      }
+                      className={inputClass(errors.postalCode)}
+                      aria-invalid={!!errors.postalCode || undefined}
+                    />
+                    {errors.postalCode && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.postalCode}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Phone Number (Canada)
+                    </Label>
+                    <div className="flex">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 bg-gray-50 px-3 text-sm text-gray-700 select-none">
+                        +1
+                      </span>
+                      <Input
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={MAX_PHONE_LEN}
+                        placeholder="10 digits"
+                        value={formData.phoneNumber}
+                        onChange={(e) =>
+                          setField("phoneNumber", e.target.value)
+                        }
+                        onBlur={(e) =>
+                          validateField("phoneNumber", e.target.value)
+                        }
+                        className={`${inputClass(errors.phoneNumber)} rounded-l-none border-l-0`}
+                        aria-invalid={!!errors.phoneNumber || undefined}
+                      />
+                    </div>
+                    {errors.phoneNumber && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.phoneNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* International address */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Country
+                    </Label>
+                    <Select
+                      instanceId="country"
+                      options={countryOptions}
+                      value={formData.country}
+                      onChange={(opt: any) => {
+                        setField("country", opt);
+                        // reset state fields when country changes
+                        setFormData((p) => ({
+                          ...p,
+                          province: "",
+                          state: "",
+                          city: "",
+                          postalCode: "",
+                        }));
+                      }}
+                      styles={selectStyles}
+                      placeholder="Select country"
+                    />
+                    {errors.country && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.country}
+                      </p>
+                    )}
+                  </div>
+
+                  {formData.country?.value === "CA" ? (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Province
+                      </Label>
+                      <Select
+                        instanceId="intl-ca-province"
+                        options={CA_PROVINCES.map((p) => ({
+                          value: p,
+                          label: p,
+                        }))}
+                        value={toOption(formData.province)}
+                        onChange={(opt: any) =>
+                          setField("province", opt?.value || "")
+                        }
+                        styles={selectStyles}
+                        placeholder="Select province"
+                      />
+                      {errors.province && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {errors.province}
+                        </p>
+                      )}
+                    </div>
+                  ) : formData.country?.value === "US" ? (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        State
+                      </Label>
+                      <Select
+                        instanceId="intl-us-state"
+                        options={US_STATES.map((s) => ({ value: s, label: s }))}
+                        value={toOption(formData.state)}
+                        onChange={(opt: any) =>
+                          setField("state", opt?.value || "")
+                        }
+                        styles={selectStyles}
+                        placeholder="Select state"
+                      />
+                      {errors.state && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {errors.state}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Province/State
+                      </Label>
+                      <Input
+                        placeholder="Province/State"
+                        value={formData.state}
+                        onChange={(e) => setField("state", e.target.value)}
+                        onBlur={(e) => validateField("state", e.target.value)}
+                        className={inputClass(errors.state)}
+                      />
+                      {errors.state && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {errors.state}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      City
+                    </Label>
+                    {formData.country?.value === "CA" ? (
+                      <Select
+                        instanceId="intl-ca-city"
+                        isDisabled={!formData.province}
+                        options={(PROVINCE_CITIES[formData.province] || []).map(
+                          (c) => ({ value: c, label: c }),
+                        )}
+                        value={toOption(formData.city)}
+                        onChange={(opt: any) =>
+                          setField("city", opt?.value || "")
+                        }
+                        styles={selectStyles}
+                        placeholder={
+                          formData.province
+                            ? "Select city"
+                            : "Select province first"
+                        }
+                      />
+                    ) : (
+                      <Input
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={(e) => setField("city", e.target.value)}
+                        onBlur={(e) => validateField("city", e.target.value)}
+                        className={inputClass(errors.city)}
+                      />
+                    )}
+                    {errors.city && (
+                      <p className="text-xs text-red-500 mt-1">{errors.city}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Address
+                    </Label>
+                    <Input
+                      placeholder="Street address"
+                      value={formData.address}
+                      onChange={(e) => setField("address", e.target.value)}
+                      onBlur={(e) => validateField("address", e.target.value)}
+                      className={inputClass(errors.address)}
+                    />
+                    {errors.address && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Postal/ZIP remains; Phone with +1 prefix kept for Canada */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Postal / ZIP
+                    </Label>
+                    <Input
+                      maxLength={10}
+                      placeholder={
+                        formData.country?.value === "CA"
+                          ? "A1A 1A1"
+                          : "ZIP / Postal"
+                      }
+                      value={formData.postalCode}
+                      onChange={(e) => setField("postalCode", e.target.value)}
+                      onBlur={(e) => {
+                        if (formData.country?.value === "CA")
+                          validateField("postalCode", e.target.value);
+                        else
+                          setErrors((prev) => ({
+                            ...prev,
+                            postalCode: e.target.value.trim()
+                              ? ""
+                              : "Postal/ZIP is required.",
+                          }));
+                      }}
+                      className={inputClass(errors.postalCode)}
+                    />
+                    {errors.postalCode && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.postalCode}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Phone Number (Canada)
+                    </Label>
+                    <div className="flex">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 bg-gray-50 px-3 text-sm text-gray-700 select-none">
+                        +1
+                      </span>
+                      <Input
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={MAX_PHONE_LEN}
+                        placeholder="10 digits"
+                        value={formData.phoneNumber}
+                        onChange={(e) =>
+                          setField("phoneNumber", e.target.value)
+                        }
+                        onBlur={(e) =>
+                          validateField("phoneNumber", e.target.value)
+                        }
+                        className={`${inputClass(errors.phoneNumber)} rounded-l-none border-l-0`}
+                      />
+                    </div>
+                    {errors.phoneNumber && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.phoneNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Terms */}
+            <div className="flex items-start gap-2 pt-2">
+              <Checkbox
+                id="terms"
+                checked={formData.agreeToTerms}
+                onCheckedChange={(v) => setField("agreeToTerms", Boolean(v))}
+                className="mt-1"
+              />
+              <Label
+                htmlFor="terms"
+                className="text-sm text-gray-600 leading-relaxed"
+              >
+                I agree to the{" "}
+                <a
+                  href="#"
+                  className="hover:underline"
+                  style={{ color: BRAND }}
+                >
+                  Terms and Condition
+                </a>{" "}
+                and{" "}
+                <a
+                  href="#"
+                  className="hover:underline"
+                  style={{ color: BRAND }}
+                >
+                  Privacy Policy
+                </a>
+              </Label>
+            </div>
+            {errors.agreeToTerms && (
+              <p className="text-xs text-red-500">{errors.agreeToTerms}</p>
+            )}
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              className="w-full h-12 text-white transition-colors"
+              style={{ backgroundColor: BRAND }}
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </form>
+
+          <div className="text-center text-xs text-gray-500 pt-4">
+            Copyright 2025, All rights reserved. – Hotelire.ca
+          </div>
         </div>
       </main>
     </div>

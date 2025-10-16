@@ -56,15 +56,6 @@ export default function CustomerHomePage() {
             <DestinationCard key={destination.id} destination={destination} />
           ))}
         </div>
-
-        <Button className="w-10 h-10 bg-white rounded-[20px] shadow-[0px_4px_4px_#00000040] p-0 mt-16 md:mt-24 lg:mt-[133px] ml-auto flex transition-all duration-200 hover:bg-white/90 hover:scale-110 hover:shadow-xl" aria-label="Next destinations">
-          <Image
-            src="/figmaAssets/image-19-2.png"
-            alt=""
-            width={19}
-            height={20}
-          />
-        </Button>
       </section>
 
       {/* Most Popular Hotels */}
@@ -154,18 +145,21 @@ export default function CustomerHomePage() {
           ))}
         </div>
 
-        <Button className="w-10 h-10 bg-white rounded-[20px] shadow-[0px_4px_4px_#00000040] p-0 mt-16 md:mt-24 lg:mt-[133px] ml-auto flex transition-all duration-200 hover:bg-white/90 hover:scale-110 hover:shadow-xl" aria-label="Next properties">
+        {/* <Button
+          className="w-10 h-10 bg-white rounded-[20px] shadow-[0px_4px_4px_#00000040] p-0 mt-16 md:mt-24 lg:mt-[133px] ml-auto flex transition-all duration-200 hover:bg-white/90 hover:scale-110 hover:shadow-xl"
+          aria-label="Next properties"
+        >
           <Image
             src="/figmaAssets/image-19.png"
             alt=""
             width={19}
             height={20}
           />
-        </Button>
+        </Button> */}
       </section>
 
       {/* Business CTA */}
-      <section className="w-full bg-[#e3fdff] py-12 md:py-16 lg:py-[81px] relative overflow-hidden">
+      <section className="w-full bg-[#e3fdff] py-12 md:py-16 lg:py-[70px] relative overflow-hidden">
         <div className="absolute top-[-45px] left-[210px] w-[244px] h-[498px] -rotate-90 bg-[linear-gradient(180deg,rgba(255,255,255,0)_56%,rgba(254,188,17,1)_89%)] hidden lg:block" />
 
         <Image
@@ -184,7 +178,7 @@ export default function CustomerHomePage() {
             Join Hotelire and showcase your property to travelers looking for
             their next memorable stay.
           </p>
-          <Button className="w-full md:w-[500px] lg:w-[612px] h-[55px] md:h-[68px] bg-[#3f2c77] rounded-[10px] [font-family:'Inter',Helvetica] font-bold text-white text-lg md:text-xl transition-all duration-200 hover:bg-[#2a2158] hover:scale-105 hover:shadow-xl">
+          <Button className="w-full md:w-[500px] lg:w-[612px] h-[55px] md:h-[68px] bg-[#3f2c77] rounded-[10px] [font-family:'Inter',Helvetica] font-bold text-white text-lg md:text-xl transition-all duration-200 hover:bg-[#2a2158] hover:scale-[1.02] hover:shadow-[0_4px_10px_rgba(0,0,0,0.15)]">
             SIGN UP AS PROPERTY OWNER
           </Button>
         </div>

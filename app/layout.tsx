@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Hotel Management System",
+  title: "Hotelire",
   description: "Find Your Dream Luxury Hotel",
 };
 

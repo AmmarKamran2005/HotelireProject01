@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronDownIcon, CalendarIcon, UsersIcon, MapPinIcon, Minus, Plus } from "lucide-react";
+import {
+  ChevronDownIcon,
+  CalendarIcon,
+  UsersIcon,
+  MapPinIcon,
+  Minus,
+  Plus,
+} from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -180,7 +187,7 @@ export function SearchBar() {
 
   const filteredCities = location
     ? canadianCities.filter((city) =>
-        city.toLowerCase().includes(location.toLowerCase())
+        city.toLowerCase().includes(location.toLowerCase()),
       )
     : [];
 
@@ -248,27 +255,41 @@ export function SearchBar() {
               {checkInDate && checkOutDate
                 ? `${format(checkInDate, "MMM dd")} - ${format(checkOutDate, "MMM dd")}`
                 : "Select dates"}
-              <ChevronDownIcon className="ml-auto w-3.5 h-2" aria-hidden="true" />
+              <ChevronDownIcon
+                className="ml-auto w-3.5 h-2"
+                aria-hidden="true"
+              />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <div className="p-4">
-              <p className="text-sm font-semibold text-[#3f2c77] mb-2">Check-in</p>
-              <Calendar
-                mode="single"
-                selected={checkInDate}
-                onSelect={setCheckInDate}
-                disabled={(date) => date < new Date()}
-                className="rounded-md border"
-              />
-              <p className="text-sm font-semibold text-[#3f2c77] mb-2 mt-4">Check-out</p>
-              <Calendar
-                mode="single"
-                selected={checkOutDate}
-                onSelect={setCheckOutDate}
-                disabled={(date) => !checkInDate || date <= checkInDate}
-                className="rounded-md border"
-              />
+            <div className="p-4 flex flex-col md:flex-row gap-6">
+              {/* Check-in Calendar */}
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#3f2c77] mb-2">
+                  Check-in
+                </p>
+                <Calendar
+                  mode="single"
+                  selected={checkInDate}
+                  onSelect={setCheckInDate}
+                  disabled={(date) => date < new Date()}
+                  className="rounded-md border"
+                />
+              </div>
+
+              {/* Check-out Calendar */}
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#3f2c77] mb-2">
+                  Check-out
+                </p>
+                <Calendar
+                  mode="single"
+                  selected={checkOutDate}
+                  onSelect={setCheckOutDate}
+                  disabled={(date) => !checkInDate || date <= checkInDate}
+                  className="rounded-md border"
+                />
+              </div>
             </div>
           </PopoverContent>
         </Popover>
@@ -288,17 +309,24 @@ export function SearchBar() {
               data-testid="button-guests"
             >
               {adults + children > 0
-                ? `${adults} ${adults === 1 ? 'adult' : 'adults'}${children > 0 ? ` - ${children} ${children === 1 ? 'child' : 'children'}` : ''}`
+                ? `${adults} ${adults === 1 ? "adult" : "adults"}${children > 0 ? ` - ${children} ${children === 1 ? "child" : "children"}` : ""}`
                 : "Add guests"}
-              <ChevronDownIcon className="ml-auto w-3.5 h-2" aria-hidden="true" />
+              <ChevronDownIcon
+                className="ml-auto w-3.5 h-2"
+                aria-hidden="true"
+              />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[280px] p-4" align="start">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="[font-family:'Poppins',Helvetica] font-semibold text-[#3f2c77] text-sm">Adults</p>
-                  <p className="[font-family:'Poppins',Helvetica] text-xs text-gray-500">Age 13+</p>
+                  <p className="[font-family:'Poppins',Helvetica] font-semibold text-[#3f2c77] text-sm">
+                    Adults
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] text-xs text-gray-500">
+                    Age 13+
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Button
@@ -311,7 +339,12 @@ export function SearchBar() {
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-8 text-center [font-family:'Poppins',Helvetica] font-semibold" data-testid="text-adults-count">{adults}</span>
+                  <span
+                    className="w-8 text-center [font-family:'Poppins',Helvetica] font-semibold"
+                    data-testid="text-adults-count"
+                  >
+                    {adults}
+                  </span>
                   <Button
                     size="icon"
                     variant="outline"
@@ -325,8 +358,12 @@ export function SearchBar() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="[font-family:'Poppins',Helvetica] font-semibold text-[#3f2c77] text-sm">Children</p>
-                  <p className="[font-family:'Poppins',Helvetica] text-xs text-gray-500">Age 0-12</p>
+                  <p className="[font-family:'Poppins',Helvetica] font-semibold text-[#3f2c77] text-sm">
+                    Children
+                  </p>
+                  <p className="[font-family:'Poppins',Helvetica] text-xs text-gray-500">
+                    Age 0-12
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Button
@@ -339,7 +376,12 @@ export function SearchBar() {
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-8 text-center [font-family:'Poppins',Helvetica] font-semibold" data-testid="text-children-count">{children}</span>
+                  <span
+                    className="w-8 text-center [font-family:'Poppins',Helvetica] font-semibold"
+                    data-testid="text-children-count"
+                  >
+                    {children}
+                  </span>
                   <Button
                     size="icon"
                     variant="outline"
