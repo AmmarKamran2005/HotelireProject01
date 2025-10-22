@@ -8,7 +8,7 @@ import { DestinationCard } from "@/components/DestinationCard";
 import { HotelCard } from "@/components/HotelCard";
 import { PropertyCard } from "@/components/PropertyCard";
 import { destinations, popularHotels, uniqueProperties } from "@/lib/data";
-
+// i am updating ...
 export default function CustomerHomePage() {
   return (
     <div className="bg-white w-full flex flex-col">
